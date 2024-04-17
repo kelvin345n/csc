@@ -7,9 +7,12 @@ struct point {
 };
 
 int main(void){
-    struct point p1 = {0, 1, 2};
-    struct point *p = &p1;
+    size_t x = 5;
+    int y = 5;
+    int z = 2;
+    int w = y / z;
 
-    printf("%d\n", sizeof(p1));
-    printf("%d\n", sizeof(p));
+    printf("%ld\n", sizeof(y));
+    printf("%ld\n", sizeof(x));
+    printf("%d\n", w);
 }
