@@ -22,7 +22,6 @@ void set_bit(unsigned * x,
 // Assume 0 <= n <= 31
 void flip_bit(unsigned * x,
               unsigned n) {
-
     unsigned y = (unsigned) 1 << n;
     *x = *x ^ y;
 }
