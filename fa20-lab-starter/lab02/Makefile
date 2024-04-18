@@ -48,3 +48,12 @@ clean:
 
 vector.c: vector.h
 vector-test.c: vector.h
+
+vector-test: vector.o vector-test.o
+	gcc -o vector-test vector.o vector-test.o
+
+vector.o: vector.h vector.c
+	gcc -c -o vector.o vector.c
+
+vector-test.o: vector.h vector.c
+	gcc -c -o vector-test.o vector-test.c
