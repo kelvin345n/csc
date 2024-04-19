@@ -29,10 +29,9 @@ Color *evaluateOnePixel(Image *image, int row, int col)
 
 	Color* return_color = (Color*) malloc(sizeof(Color));
 	if (return_color == NULL){
-		// Deals with Null later
+		// Deal with NULL later
 		return return_color;
 	}
-
 	// If last_bit is 0 then R is 0, but if it is 1 then R equals to 255;
 	return_color->R = last_bit * 255;
 	return_color->G = last_bit * 255;
@@ -102,6 +101,7 @@ int main(int argc, char **argv)
 		Image* original_image = readData(argv[1]); //Reads in file path to ppm P3 file and create an image
 		Image* new_image = steganography(original_image);
 		freeImage(original_image);
+		
 		writeData(new_image);
 		freeImage(new_image);
 	} else {
