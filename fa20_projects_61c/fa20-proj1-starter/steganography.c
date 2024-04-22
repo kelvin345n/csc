@@ -66,7 +66,7 @@ Image *steganography(Image *image)
 	//Set each elem in image to a color
 	for (int i = 0; i < image_length; i++){
 		int row = i/new_image->cols;
-		int col = i%new_image->rows;
+		int col = i%new_image->cols;
 		new_image->image[i] = evaluateOnePixel(image, row, col);
 
 		if (new_image->image[i] == NULL){
@@ -111,3 +111,4 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+//frf
