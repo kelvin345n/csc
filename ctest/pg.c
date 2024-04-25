@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
+
 struct point {
     char x;
     int i;
@@ -7,12 +9,8 @@ struct point {
 };
 
 int main(void){
-    size_t x = 5;
-    int y = 5;
-    int z = 2;
-    int w = y / z;
-
-    printf("%ld\n", sizeof(y));
-    printf("%ld\n", sizeof(x));
-    printf("%d\n", w);
+    int8_t x = 50;
+    int8_t y = 5;
+    int8_t z = x * y;
+    printf("%d\n", z);
 }
