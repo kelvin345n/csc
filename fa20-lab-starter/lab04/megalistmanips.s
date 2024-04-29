@@ -12,6 +12,12 @@ end_msg:    .asciiz "Lists after: \n"
 
 .text
 main:
+    #PROLOGUE
+    addi sp, sp, -8
+    sw ra, 0(sp)
+    sw s0, 4(sp)
+    #PROLOGUE
+
     jal create_default_list
     mv s0, a0   # v0 = s0 is head of node list
 
@@ -42,21 +48,30 @@ main:
     add a0, s0, x0
     jal print_list
 
+    #EPILOGUE
+    lw ra, 0(sp)
+    lw s0, 4(sp)
+    addi sp, sp, 8
+    #EPILOGUE
+
     li a0, 10
     ecall
 
 map:
-    addi sp, sp, -12
+    addi sp, sp, -24
     sw ra, 0(sp)
-    sw s1, 4(sp)
-    sw s0, 8(sp)
-
+    sw s0, 4(sp)
+    sw s1, 8(sp)
+    sw s2, 12(sp)
+    sw s3, 16(sp)
+    sw s4, 20(sp)
+    
     beq a0, x0, done    # if we were given a null pointer, we're done.
 
     add s0, a0, x0      # save address of this node in s0
     add s1, a1, x0      # save address of function in s1
-    add t0, x0, x0      # t0 is a counter
-
+    add s2, x0, x0      # s2 is a counter
+    li s3, 4            # s3 holds how many bytes in a word
     # remember that each node is 12 bytes long:
     # - 4 for the array pointer
     # - 4 for the size of the array
@@ -66,27 +81,31 @@ map:
     # are modified by the callees, even when we know the content inside the functions 
     # we call. this is to enforce the abstraction barrier of calling convention.
 mapLoop:
-    add t1, s0, x0      # load the address of the array of current node into t1
-    lw t2, 4(s0)        # load the size of the node's array into t2
+    lw t1, 0(s0)      # load the address of the array of current node into t1
 
-    add t1, t1, t0      # offset the array address by the count
+    mul t4, s2, s3      # Multiply the bytes per word by the counter. 
+    add t1, t1, t4      # offset the array address by the count
     lw a0, 0(t1)        # load the value at that address into a0
-
+    mv s4, t1
+    
     jalr s1             # call the function on that value.
 
-    sw a0, 0(t1)        # store the returned value back into the array
-    addi t0, t0, 1      # increment the count
-    bne t0, t2, mapLoop # repeat if we haven't reached the array size yet
+    sw a0, 0(s4)        # store the returned value back into the array
+    addi s2, s2, 1      # increment the count
+    lw t2, 4(s0)        # load the size of the node's array into t2
+    bne s2, t2, mapLoop # repeat if we haven't reached the array size yet
 
-    la a0, 8(s0)        # load the address of the next node into a0
-    lw a1, 0(s1)        # put the address of the function back into a1 to prepare for the recursion
-
+    lw a0, 8(s0)        # load the address of the next node into a0
+    mv a1, s1           # put the address of the function back into a1 to prepare for the recursion
     jal  map            # recurse
 done:
-    lw s0, 8(sp)
-    lw s1, 4(sp)
     lw ra, 0(sp)
-    addi sp, sp, 12
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    lw s2, 12(sp)
+    lw s3, 16(sp)
+    lw s4, 20(sp)
+    addi sp, sp, 24
     jr ra
 
 mystery:
@@ -95,8 +114,14 @@ mystery:
     jr ra
 
 create_default_list:
-    addi sp, sp, -4
+    addi sp, sp, -24
     sw ra, 0(sp)
+    sw s0, 4(sp)
+    sw s1, 8(sp)
+    sw s2, 12(sp)
+    sw s3, 16(sp)
+    sw s4, 20(sp)
+    
     li s0, 0  # pointer to the last node we handled
     li s1, 0  # number of nodes handled
     li s2, 5  # size
@@ -122,11 +147,18 @@ loop: #do...
     li t6 5
     bne s1, t6, loop # ... while i!= 5
     mv a0, s4
+    
     lw ra, 0(sp)
-    addi sp, sp, 4
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    lw s2, 12(sp)
+    lw s3, 16(sp)
+    lw s4, 20(sp)
+    addi sp, sp, 24
     jr ra
 
-fillArray: lw t0, 0(a1) #t0 gets array element
+fillArray: 
+    lw t0, 0(a1) #t0 gets array element
     sw t0, 0(a0) #node->arr gets array element
     lw t0, 4(a1)
     sw t0, 4(a0)
@@ -155,7 +187,7 @@ printLoop:
     li a0, 11  # prepare for print string ecall
     ecall
     addi t1, t1, 1
-  li t6 5
+    li t6 5
     bne t1, t6, printLoop # ... while i!= 5
     li a1, '\n'
     li a0, 11
@@ -174,3 +206,4 @@ malloc:
     li a0, 9
     ecall
     jr ra
+
