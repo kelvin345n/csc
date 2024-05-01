@@ -325,7 +325,7 @@ class TestDot(TestCase):
         t.input_array("a0", array0)
         t.input_array("a1", array1)
         # load array attributes into argument registers
-        t.input_scalar("a2", len(array0))
+        t.input_scalar("a2", 3)
         t.input_scalar("a3", 3)
         t.input_scalar("a4", 2)
         # call the `dot` function
@@ -349,14 +349,16 @@ class TestDot(TestCase):
         t.input_scalar("a4", 1)
         # call the `dot` function
         t.call("dot")
+        # check that the register a0 contains the correct output
+        t.check_scalar("a0", 0)
         # Generate test file
-        t.execute(code=75)
+        t.execute()
         
     def test_zero_vector2(self):
         t = AssemblyTest(self, "dot.s")
         # create arrays in the data section
-        array0 = t.array([0])
-        array1 = t.array([1])
+        array0 = t.array([])
+        array1 = t.array([])
         # load array addresses into argument registers
         t.input_array("a0", array0)
         t.input_array("a1", array1)
