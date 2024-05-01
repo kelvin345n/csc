@@ -14,6 +14,8 @@
 #   this function terminates the program with error code 78.
 # ==============================================================================
 relu:
+    beq a1, x0, error
+
     # Prologue
     addi sp, sp, -28
     sw ra, 0(sp)
@@ -58,8 +60,6 @@ loop_end:
     lw s5, 24(sp)
     addi sp, sp, 28
     # Epilogue
-    li t1, 1
-    blt t0, t1, error   # If length of psuedo length is less than 1: error
 	ret
 error:      # return error code 78 if length of vector is less than one
     li a0, 17

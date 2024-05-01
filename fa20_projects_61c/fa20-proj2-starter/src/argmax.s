@@ -15,7 +15,7 @@
 #   this function terminates the program with error code 77.
 # =================================================================
 argmax:
-    beq a1, x0, loop_end        
+    beq a1, x0, error        
     
     mv t0, a0          # t0 stores the address of array
     mv t1, a1          # t1 stores the num of elems in array
@@ -47,7 +47,6 @@ loop_continue:
 load_return:
     mv a0, t4           # Stores index of max elem to return
 loop_end:
-    beq a5, x0, error  # If vector is 0, then return error code 77
     ret
  
 error:
