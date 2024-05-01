@@ -21,6 +21,27 @@ class TestAbs(TestCase):
         t.call("abs")
         t.check_scalar("a0", 1)
         t.execute()
+    
+    def test_minus_one(self):
+        t = AssemblyTest(self, "abs.s")
+        t.input_scalar("a0", -1)
+        t.call("abs")
+        t.check_scalar("a0", 1)
+        t.execute()
+    
+    def test_minus_69(self):
+        t = AssemblyTest(self, "abs.s")
+        t.input_scalar("a0", 69)
+        t.call("abs")
+        t.check_scalar("a0", 69)
+        t.execute()
+    
+    def test_minus_69(self):
+        t = AssemblyTest(self, "abs.s")
+        t.input_scalar("a0", -69)
+        t.call("abs")
+        t.check_scalar("a0", 69)
+        t.execute()
 
     @classmethod
     def tearDownClass(cls):
@@ -42,6 +63,51 @@ class TestRelu(TestCase):
         t.check_array(array0, [1, 0, 3, 0, 5, 0, 7, 0, 9])
         # generate the `assembly/TestRelu_test_simple.s` file and run it through venus
         t.execute()
+    
+    def test_two_harder(self):
+        t = AssemblyTest(self, "relu.s")
+        # create an array in the data section
+        array0 = t.array([10, -10, 30, -44, 15, -160, 7, 99, 100, -1, -1, -1, -4])
+        # load address of `array0` into register a0
+        t.input_array("a0", array0)
+        # set a1 to the length of our array
+        t.input_scalar("a1", len(array0))
+        # call the relu function
+        t.call("relu")
+        # check that the array0 was changed appropriately
+        t.check_array(array0, [10, 0, 30, 0, 15, 0, 7, 99, 100, 0, 0, 0, 0])
+        # generate the `assembly/TestRelu_test_simple.s` file and run it through venus
+        t.execute()
+    
+    def test_one_elem_vector(self):
+        t = AssemblyTest(self, "relu.s")
+        # create an array in the data section
+        array0 = t.array([10])
+        # load address of `array0` into register a0
+        t.input_array("a0", array0)
+        # set a1 to the length of our array
+        t.input_scalar("a1", len(array0))
+        # call the relu function
+        t.call("relu")
+        # check that the array0 was changed appropriately
+        t.check_array(array0, [10])
+        # generate the `assembly/TestRelu_test_simple.s` file and run it through venus
+        t.execute()
+    
+    def test_zero_vector(self):
+        t = AssemblyTest(self, "relu.s")
+        # create an array in the data section
+        array0 = t.array([0])
+        # load address of `array0` into register a0
+        t.input_array("a0", array0)
+        # set a1 to the length of our array
+        t.input_scalar("a1", len(array0))
+        # call the relu function
+        t.call("relu")
+        # check that the array0 was changed appropriately
+        t.check_array(array0, [0])
+        # generate the `assembly/TestRelu_test_simple.s` file and run it through venus
+        t.execute(code=78)
 
     @classmethod
     def tearDownClass(cls):
