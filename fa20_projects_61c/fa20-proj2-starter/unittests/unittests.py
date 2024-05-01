@@ -240,6 +240,25 @@ class TestDot(TestCase):
         # Generate test file
         t.execute()
     
+    def test_SUPER(self):
+        t = AssemblyTest(self, "dot.s")
+        # create arrays in the data section
+        array0 = t.array([-5, 99, 99, -6, 99, 99, -7, 99, 99, -8, 99, 99, -9])
+        array1 = t.array([6, 99, 99, 99, 99, 7, 99, 99, 99, 99, 8, 99, 99, 99, 99, 9, 99, 99, 99, 99, 10])
+        # load array addresses into argument registers
+        t.input_array("a0", array0)
+        t.input_array("a1", array1)
+        # load array attributes into argument registers
+        t.input_scalar("a2", 5)  # Length of vectors
+        t.input_scalar("a3", 3)  # Stride of vector0   
+        t.input_scalar("a4", 5)  # Stride of vector1
+        # call the `dot` function
+        t.call("dot")
+        # check the return value
+        t.check_scalar("a0", -290)
+        # Generate test file
+        t.execute()
+    
     def test_harder(self):
         t = AssemblyTest(self, "dot.s")
         # create arrays in the data section
