@@ -219,7 +219,6 @@ class TestArgmax(TestCase):
     def tearDownClass(cls):
         print_coverage("argmax.s", verbose=False)
 
-
 class TestDot(TestCase):
     def test_simple(self):
         t = AssemblyTest(self, "dot.s")
@@ -428,31 +427,31 @@ class TestDot(TestCase):
     def tearDownClass(cls):
         print_coverage("dot.s", verbose=False)
 
-
 class TestMatmul(TestCase):
 
     def do_matmul(self, m0, m0_rows, m0_cols, m1, m1_rows, m1_cols, result, code=0):
         t = AssemblyTest(self, "matmul.s")
         # we need to include (aka import) the dot.s file since it is used by matmul.s
         t.include("dot.s")
-
         # create arrays for the arguments and to store the result
         array0 = t.array(m0)
         array1 = t.array(m1)
         array_out = t.array([0] * len(result))
 
         # load address of input matrices and set their dimensions
-        raise NotImplementedError("TODO")
-        # TODO
+        t.input_array("a0", array0)
+        t.input_scalar("a1", m0_rows)
+        t.input_scalar("a2", m0_cols)
+        t.input_array("a3", array1)
+        t.input_scalar("a4", m1_rows)
+        t.input_scalar("a5", m1_cols)
         # load address of output array
-        # TODO
+        t.input_array("a6", array_out)
 
         # call the matmul function
         t.call("matmul")
-
         # check the content of the output array
-        # TODO
-
+        t.check_array(array_out, result)
         # generate the assembly file and run it through venus, we expect the simulation to exit with code `code`
         t.execute(code=code)
 
@@ -461,6 +460,159 @@ class TestMatmul(TestCase):
             [1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 3,
             [1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 3,
             [30, 36, 42, 66, 81, 96, 102, 126, 150]
+        )
+
+    def test_reverse(self):
+        self.do_matmul(
+            [3, -2, -1, 2, 6, -5, 7, 1, -8], 3, 3,
+            [1, 9, 4, 0, 11, 5, -3, 2, -7], 3, 3,
+            [6, 3, 9, 17, 74, 73, 31, 58, 89]
+        )
+        self.do_matmul(
+            [1, 9, 4, 0, 11, 5, -3, 2, -7], 3, 3,
+            [3, -2, -1, 2, 6, -5, 7, 1, -8], 3, 3,
+            [49, 56, -78, 57, 71, -95, -54, 11, 49]
+        )
+    
+    def test_one_elem(self):
+        self.do_matmul(
+            [5], 1, 1,
+            [6], 1, 1,
+            [30]
+        )
+        self.do_matmul(
+            [0], 1, 1,
+            [6], 1, 1,
+            [0]
+        )
+    
+    def test_uneven_matrices(self):
+        self.do_matmul(
+            [1], 1, 1,
+            [1, 2], 1, 2,
+            [1, 2],
+        )
+        self.do_matmul(
+            [1, 2, 4, 5], 2, 2,
+            [1, 9], 2, 1,
+            [19, 49],
+        )
+        self.do_matmul(
+            [1, -1, 3, 6, 0, -3, -4, 7, -1, 0, 4, 5], 6, 2,
+            [-3, 1, 6, 7, 0, -7], 2, 3,
+            [-10, 1, 13, 33, 3, -24, -21, 0, 21, 61, -4, -73, 3, -1, -6, 23, 4, -11],
+        )
+        self.do_matmul(
+            [1, 3, 5, 7, 8, 9], 6, 1,
+            [3, 1], 1, 2,
+            [3, 1, 9, 3, 15, 5, 21, 7, 24, 8, 27, 9],
+        )
+        self.do_matmul(
+            [1, 2, 3, 4, 5], 1, 5,
+            [1, -1, 2, -2, 3, -3, 4, -4, 5, -5], 5, 2,
+            [55, -55],
+        )
+     
+    def test_cols(self):
+        self.do_matmul(
+            [5, 6, 7, 8, 9, 10, 11], 1, 7,
+            [1, 2, 3, 4, 5, 6, 7], 7, 1,
+            [252]
+        )
+    
+    def test_rows(self):
+        self.do_matmul(
+            [5, 6, 7, -8, 9], 5, 1,
+            [1, 2, -3, 4, 5], 1, 5,
+            [5, 10, -15, 20, 25, 
+             6, 12, -18, 24, 30,
+             7, 14, -21, 28, 35,
+             -8, -16, 24, -32, -40,
+             9, 18, -27, 36, 45]
+        )
+    
+    def test_error_code_72(self):
+        self.do_matmul(
+            [], 0, 1,
+            [3, -2, -1, 2, 6, -5, 7, 1, -8], 3, 3,
+            [0],
+            72 
+        )
+        self.do_matmul(
+            [], -1, 1,
+            [3, -2, -1, 2, 6, -5, 7, 1, -8], 3, 3,
+            [0],
+            72 
+        )
+        self.do_matmul(
+            [], 3, 0,
+            [3, -2, -1, 2, 6, -5, 7, 1, -8], 3, 3,
+            [0],
+            72 
+        )
+        self.do_matmul(
+            [], 10, -3,
+            [3, -2, -1, 2, 6, -5, 7, 1, -8], 3, 3,
+            [0],
+            72 
+        )
+        self.do_matmul(
+            [], 0, 0,
+            [3, -2, -1, 2, 6, -5, 7, 1, -8], 3, 3,
+            [0],
+            72 
+        )
+    
+    def test_error_code_73(self):
+        self.do_matmul(
+            [1, 2, 1, 2, 1, 2, 1, 2, 1, 2], 2, 4,
+            [], 0, 3,
+            [0],
+            73 
+        )
+        self.do_matmul(
+            [1, 2, 1, 2, 1, 2, 1, 2, 1, 2], 2, 4,
+            [], -1, 3,
+            [0],
+            73 
+        )
+        self.do_matmul(
+            [1, 2, 1, 2, 1, 2, 1, 2, 1, 2], 2, 4,
+            [], 0, 0,
+            [0],
+            73 
+        )
+        self.do_matmul(
+            [1, 2, 1, 2, 1, 2, 1, 2, 1, 2], 2, 4,
+            [], 1, -1,
+            [0],
+            73 
+        )
+
+    def test_error_code_74(self):
+        self.do_matmul(
+            [1, 2, 1, 2, 1, 2, 1, 2], 2, 4,
+            [1, 2, 3], 1, 3,
+            [0],
+            74
+        )
+        self.do_matmul(
+            [1, 2, 1, 2, 1, 2, 1, 2, 1], 3, 3,
+            [1, 2, 3], 4, 3,
+            [0],
+            74
+        )
+        self.do_matmul(
+            [1, 2, 1, 2, 1, 2, 1, 2, 1], 4, 2,
+            [1, 2, 1, 2, 1, 2, 1, 2, 1], 4, 2,
+            [0],
+            74
+        )
+        self.do_matmul(
+            [1], 1, 4,
+            [1, 2], 1, 2,
+            [0],
+            74
         )
 
     @classmethod
