@@ -830,26 +830,170 @@ class TestReadMatrix(TestCase):
     def tearDownClass(cls):
         print_coverage("read_matrix.s", verbose=False)
 
-
 class TestWriteMatrix(TestCase):
 
     def do_write_matrix(self, fail='', code=0):
         t = AssemblyTest(self, "write_matrix.s")
+        in_array = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        rows = 3
+        cols = 3
+        
         outfile = "outputs/test_write_matrix/student.bin"
         # load output file name into a0 register
         t.input_write_filename("a0", outfile)
         # load input array and other arguments
-        raise NotImplementedError("TODO")
-        # TODO
+        t.input_array("a1", in_array)
+        t.input_scalar("a2", rows)
+        t.input_scalar("a3", cols)
+        
         # call `write_matrix` function
         t.call("write_matrix")
         # generate assembly and run it through venus
         t.execute(fail=fail, code=code)
         # compare the output file against the reference
-        t.check_file_output(outfile, "outputs/test_write_matrix/reference.bin")
+        if not fail:
+            t.check_file_output(outfile, "outputs/test_write_matrix/reference.bin")
 
     def test_simple(self):
         self.do_write_matrix()
+
+    def do_test_basic_main_0(self, fail='', code=0):
+        t = AssemblyTest(self, "write_matrix.s")
+        in_array = t.array([171, 441, 711])
+        rows = 3
+        cols = 1
+        
+        outfile = "outputs/test_basic_main/student0.bin"
+        # load output file name into a0 register
+        t.input_write_filename("a0", outfile)
+        # load input array and other arguments
+        t.input_array("a1", in_array)
+        t.input_scalar("a2", rows)
+        t.input_scalar("a3", cols)
+        
+        # call `write_matrix` function
+        t.call("write_matrix")
+        # generate assembly and run it through venus
+        t.execute(fail=fail, code=code)
+        # compare the output file against the reference
+        
+        t.check_file_output(outfile, "outputs/test_basic_main/reference0.bin")
+
+    def do_test_basic_main_1(self, fail='', code=0):
+        t = AssemblyTest(self, "write_matrix.s")
+        in_array = t.array([-34, 884, -1076, 74, 394])
+        rows = 5
+        cols = 1
+        
+        outfile = "outputs/test_basic_main/student1.bin"
+        # load output file name into a0 register
+        t.input_write_filename("a0", outfile)
+        # load input array and other arguments
+        t.input_array("a1", in_array)
+        t.input_scalar("a2", rows)
+        t.input_scalar("a3", cols)
+        
+        # call `write_matrix` function
+        t.call("write_matrix")
+        # generate assembly and run it through venus
+        t.execute(fail=fail, code=code)
+        # compare the output file against the reference
+        if not fail:
+            t.check_file_output(outfile, "outputs/test_basic_main/reference1.bin")
+
+    def test_basic_main(self):
+        self.do_test_basic_main_0()
+        self.do_test_basic_main_1()
+
+    def do_test_harder_0(self, fail='', code=0):
+        t = AssemblyTest(self, "write_matrix.s")
+        in_array = t.array([1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8,
+                            1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8])
+        rows = 10
+        cols = 8
+
+        outfile = "outputs/test_harder/student0.bin"
+        # load output file name into a0 register
+        t.input_write_filename("a0", outfile)
+        # load input array and other arguments
+        t.input_array("a1", in_array)
+        t.input_scalar("a2", rows)
+        t.input_scalar("a3", cols)
+        
+        # call `write_matrix` function
+        t.call("write_matrix")
+        # generate assembly and run it through venus
+        t.execute(fail=fail, code=code)
+        # compare the output file against the reference
+        if not fail:
+            t.check_file_output(outfile, "outputs/test_harder/harder0.bin")
+
+    def do_test_harder_1(self, fail='', code=0):
+        t = AssemblyTest(self, "write_matrix.s")
+        in_array = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        rows = 1
+        cols = 15
+
+        outfile = "outputs/test_harder/student1.bin"
+        # load output file name into a0 register
+        t.input_write_filename("a0", outfile)
+        # load input array and other arguments
+        t.input_array("a1", in_array)
+        t.input_scalar("a2", rows)
+        t.input_scalar("a3", cols)
+        
+        # call `write_matrix` function
+        t.call("write_matrix")
+        # generate assembly and run it through venus
+        t.execute(fail=fail, code=code)
+        # compare the output file against the reference
+        t.check_file_output(outfile, "outputs/test_harder/harder1.bin")
+
+    def do_test_harder_2(self, fail='', code=0):
+        t = AssemblyTest(self, "write_matrix.s")
+        in_array = t.array([-11])
+        rows = 1
+        cols = 1
+
+        outfile = "outputs/test_harder/student2.bin"
+        # load output file name into a0 register
+        t.input_write_filename("a0", outfile)
+        # load input array and other arguments
+        t.input_array("a1", in_array)
+        t.input_scalar("a2", rows)
+        t.input_scalar("a3", cols)
+        
+        # call `write_matrix` function
+        t.call("write_matrix")
+        # generate assembly and run it through venus
+        t.execute(fail=fail, code=code)
+        # compare the output file against the reference
+        if not fail:
+            t.check_file_output(outfile, "outputs/test_harder/harder2.bin")
+
+    def test_harder(self):
+        self.do_test_harder_0()
+        self.do_test_harder_1()
+        self.do_test_harder_2()
+
+    def test_fopen(self):
+        self.do_write_matrix('fopen', 93)
+        self.do_test_basic_main_1('fopen', 93)
+        self.do_test_harder_0('fopen', 93)
+        self.do_test_harder_2('fopen', 93)
+    
+    def test_fwrite(self):
+        self.do_write_matrix('fwrite', 94)
+        self.do_test_basic_main_1('fwrite', 94)
+        self.do_test_harder_0('fwrite', 94)
+        self.do_test_harder_2('fwrite', 94)
+
+    def test_fclose(self):
+        self.do_write_matrix('fclose', 95)
+        self.do_test_basic_main_1('fclose', 95)
+        self.do_test_harder_0('fclose', 95)
+        self.do_test_harder_2('fclose', 95)
+
 
     @classmethod
     def tearDownClass(cls):
