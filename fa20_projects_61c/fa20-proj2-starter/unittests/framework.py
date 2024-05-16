@@ -316,6 +316,7 @@ class AssemblyTest:
                 assert not a.startswith('-'), f"argument '{a}' starting with '-' is not allowed"
             # all arguments could potentially be filenames that we write to, so let's just add them
             self._write_files |= set(args)
+            
         else:
             # ensure that args is always a list
             args = []
